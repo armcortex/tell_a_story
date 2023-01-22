@@ -3,6 +3,7 @@ import yaml
 import openai
 import datetime
 
+
 class CHATGPT:
     def __init__(self):
         # Get API key
