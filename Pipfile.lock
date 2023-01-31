@@ -319,10 +319,10 @@
         },
         "openai": {
             "hashes": [
-                "sha256:1cb73dd13b4878e35205639f6ba0b637bc2cc926ff78efedfb21f79c7dbc212d"
+                "sha256:168813319a1422cb71a5005f9e404065483556cea52c9ccbfb838cda134087a7"
             ],
             "index": "pypi",
-            "version": "==0.26.2"
+            "version": "==0.26.4"
         },
         "orjson": {
             "hashes": [

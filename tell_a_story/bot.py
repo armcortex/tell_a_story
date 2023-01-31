@@ -2,11 +2,20 @@ import yaml
 import json
 import requests
 import time
+import datetime
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+)
 
 
 class PhotoBot:
     def __init__(self, filename: str):
         self.buf = []
+        self.download_path = './download/'
 
         with open(filename, 'r') as f:
             self.cf = yaml.load(f, Loader=yaml.CLoader)
@@ -27,6 +36,8 @@ class PhotoBot:
                             headers=self.header)
 
     def gen_photo(self, prompt: str):
+        logging.info('Start')
+
         payload = {
             'type': 2,
             'application_id': self.cf['discord']['midjourney_bot']['app_id'],
@@ -59,6 +70,8 @@ class PhotoBot:
         return self._post(payload)
 
     def upscale(self, idx: int):
+        logging.info('Start')
+
         msg_id = self.buf[idx]['id']
         msg_hash = self.buf[idx]['attachments'][0]['url'].split('_')[-1].split('.')[0]
 
@@ -76,6 +89,9 @@ class PhotoBot:
         return self._post(payload)
 
     def get_msg_id(self, msg, idx=0) -> str:
+        logging.info('Start')
+        self.buf = []
+
         res = self._get(5)
         ds = json.loads(res.text)
         for i, d in enumerate(ds):
@@ -85,19 +101,49 @@ class PhotoBot:
 
         return self.buf[idx]['id']
 
+    def download_image(self, idx: int):
+        logging.info('Start')
+
+        url = self.buf[idx]['attachments'][0]['proxy_url']
+        filename = self.download_path + self.buf[idx]['attachments'][0]['filename']
+
+        img = requests.get(url).content
+        with open(filename, 'wb') as f:
+            f.write(img)
+
+    def wait_event(self):
+        def get_packege():
+            res = self._get(1)
+            return json.loads(res.text)[0]
+
+        time.sleep(5)
+        while True:
+            msg = get_packege()['content']
+            if not (('start' in msg) or ('%' in msg)):
+                break
+            time.sleep(1)
+
+        time.sleep(1)
+
 
 if __name__ == '__main__':
     b = PhotoBot('config.yaml')
 
     prompt = 'cute, robot, future, icon, air force, soldier'
     res = b.gen_photo(prompt)
-    time.sleep(60)              # official announce that each photo gen need 60 seconds
     print(f'{res=}')
+    b.wait_event()
 
     msg_id = b.get_msg_id(prompt)
     print(f'{msg_id=}')
 
     res = b.upscale(0)
     print(f'{res=}')
+    b.wait_event()
+
+    msg_id = b.get_msg_id(prompt)
+    print(f'{msg_id=}')
+    b.download_image(0)
+
 
 
