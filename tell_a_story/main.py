@@ -9,7 +9,7 @@ class CHATGPT:
         # Get API key
         with open('config.yaml', 'r') as f:
             config = yaml.load(f, Loader=yaml.CLoader)
-        openai.api_key = config['api_key']
+        openai.api_key = config['openai']['api_key']
 
     @staticmethod
     def _filter_keyword(s: str) -> list:

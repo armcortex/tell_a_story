@@ -7,6 +7,7 @@ name = "pypi"
 openai = "*"
 pyyaml = "*"
 py-cord = {extras = ["speed"], version = "*"}
+requests = "*"
 
 [dev-packages]
 

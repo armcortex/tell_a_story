@@ -2,3 +2,4 @@
 *.yaml
 /ref/
 **/output/**
+**/del/**
