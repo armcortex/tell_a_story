@@ -75,6 +75,3 @@ if __name__ == '__main__':
             _ = photobot.get_msg_id(prompts)
 
             photobot.download_image(0, prefix=f'{i+1}_{idx+1}-{story_topic}')
-
-
-    pass

@@ -8,6 +8,8 @@ openai = "*"
 pyyaml = "*"
 py-cord = {extras = ["speed"], version = "*"}
 requests = "*"
+ffmpeg-python = "*"
+pillow = "*"
 
 [dev-packages]
 
