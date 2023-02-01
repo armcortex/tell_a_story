@@ -2,16 +2,13 @@ import yaml
 import json
 import requests
 import time
-import datetime
 
 from utils import logging
-
 
 
 class PhotoBot:
     def __init__(self, filename: str):
         self.buf = []
-        self.download_path = './download/'
 
         with open(filename, 'r') as f:
             self.cf = yaml.load(f, Loader=yaml.CLoader)
@@ -96,15 +93,19 @@ class PhotoBot:
 
         return self.buf[idx]['id']
 
-    def download_image(self, idx: int, prefix: str = '', suffix: str = ''):
+    def download_image(self, idx: int, download_path: str, prefix: str = '', suffix: str = ''):
         logging.info('Start')
 
         url = self.buf[idx]['attachments'][0]['proxy_url']
         img_name, ext_name = self.buf[idx]['attachments'][0]['filename'].split('.')
+
+        if prefix:
+            prefix = prefix + '-'
+
         if suffix:
-            filename = self.download_path + prefix + '-' + img_name + '-' + suffix + '.' + ext_name
-        else:
-            filename = self.download_path + prefix + '-' + img_name + '.' + ext_name
+            suffix = '-' + suffix
+
+        filename = download_path + prefix + img_name + suffix + '.' + ext_name
 
         img = requests.get(url).content
         with open(filename, 'wb') as f:
@@ -143,7 +144,8 @@ if __name__ == '__main__':
 
     msg_id = b.get_msg_id(prompt)
     print(f'{msg_id=}')
-    b.download_image(0)
+    b.download_image(0, download_path='./download/')
+
 
 
 
