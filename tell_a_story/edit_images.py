@@ -1,17 +1,15 @@
 import glob
 from PIL import Image, ImageDraw, ImageFont
+from joblib import Parallel, delayed
 
 from utils import logging
 
 
-img_path = './download/3/*.png'
-
-
-def edit_image(filename: str, words: str):
+def edit_image(filename_in: str, filename_out: str, words: str):
     logging.info('Start')
 
     # Open the image
-    img = Image.open(filename)
+    img = Image.open(filename_in)
 
     # Create a draw object
     draw = ImageDraw.Draw(img)
@@ -23,21 +21,36 @@ def edit_image(filename: str, words: str):
     draw.text((10, 10), words, font=font, fill=(255, 255, 255))
 
     # Save the image
-    img.save(filename)
+    img.save(filename_out)
 
 
-def edit_image_batch(img_path: str):
+def edit_image_batch(imgs_in: str, imgs_out: str, format: str = '*.png'):
+    def filename_convert():
+        for i, f in enumerate(glob.glob(imgs_in + format)):
+            word = f.split('/')[-1]
+            out_path = imgs_out + word
+            yield f, out_path, word
+
     logging.info('Start')
 
-    for i, f in enumerate(glob.glob(img_path)):
-        word = f.split('/')[-1]
-        print(f'{i=}, {f=}')
-        edit_image(f, word)
+    Parallel(n_jobs=24, verbose=10)(
+        delayed(edit_image)(*x) for x in filename_convert())
 
 
 def main():
-    edit_image_batch(img_path)
-    pass
+    from time import perf_counter
+
+    base_path = './download/test/'
+    in_path = base_path + 'org/'
+    out_path = base_path + 'debug/'
+
+    t1_start = perf_counter()
+
+    edit_image_batch(imgs_in=in_path,
+                     imgs_out=out_path)
+
+    t1_stop = perf_counter()
+    print(f'Execute Duration: {t1_stop - t1_start} sec')
 
 
 if __name__ == '__main__':
