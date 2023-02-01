@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d2359889f32bc83eae107eeb872fa369e809319df946c00187713031e93d539c"
+            "sha256": "a68ac2e05676f613dc1d17f57a5e2e90648f35ee5508aca9b37074a9afe390a2"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -251,6 +251,14 @@
             ],
             "markers": "python_version >= '3.5'",
             "version": "==3.4"
+        },
+        "joblib": {
+            "hashes": [
+                "sha256:091138ed78f800342968c523bdde947e7a305b8594b910a0fea2ab83c3c6d385",
+                "sha256:e1cee4a79e4af22881164f218d4311f60074197fb707e082e803b61f6d137018"
+            ],
+            "index": "pypi",
+            "version": "==1.2.0"
         },
         "multidict": {
             "hashes": [
