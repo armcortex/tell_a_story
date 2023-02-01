@@ -3,13 +3,9 @@ import json
 import requests
 import time
 import datetime
-import logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S',
-)
+from utils import logging
+
 
 
 class PhotoBot:
@@ -88,24 +84,27 @@ class PhotoBot:
 
         return self._post(payload)
 
-    def get_msg_id(self, msg, idx=0) -> str:
+    def get_msg_id(self, msg: str, idx: int = 0) -> str:
         logging.info('Start')
         self.buf = []
 
         res = self._get(5)
         ds = json.loads(res.text)
         for i, d in enumerate(ds):
-            # print(f'{i=}: {d=}')
-            if msg in d['content']:
+            if msg.strip() in d['content']:
                 self.buf.append(d)
 
         return self.buf[idx]['id']
 
-    def download_image(self, idx: int):
+    def download_image(self, idx: int, prefix: str = '', suffix: str = ''):
         logging.info('Start')
 
         url = self.buf[idx]['attachments'][0]['proxy_url']
-        filename = self.download_path + self.buf[idx]['attachments'][0]['filename']
+        img_name, ext_name = self.buf[idx]['attachments'][0]['filename'].split('.')
+        if suffix:
+            filename = self.download_path + prefix + '-' + img_name + '-' + suffix + '.' + ext_name
+        else:
+            filename = self.download_path + prefix + '-' + img_name + '.' + ext_name
 
         img = requests.get(url).content
         with open(filename, 'wb') as f:
@@ -116,10 +115,11 @@ class PhotoBot:
             res = self._get(1)
             return json.loads(res.text)[0]
 
+        logging.info('Start')
         time.sleep(5)
         while True:
             msg = get_packege()['content']
-            if not (('start' in msg) or ('%' in msg)):
+            if not (('start' in msg) or ('%' in msg) or ('paused' in msg)):
                 break
             time.sleep(1)
 

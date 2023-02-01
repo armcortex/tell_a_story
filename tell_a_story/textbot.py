@@ -3,6 +3,8 @@ import yaml
 import openai
 import datetime
 
+from utils import logging
+
 
 class CHATGPT:
     def __init__(self):
@@ -20,6 +22,8 @@ class CHATGPT:
         return re.findall(r'\d+[.:]([^\.]+)', s)
 
     def query(self, prompt, mode: str='keyword'):
+        logging.info('Start')
+
         response = openai.Completion.create(
             model="text-davinci-003",
             prompt=prompt,
