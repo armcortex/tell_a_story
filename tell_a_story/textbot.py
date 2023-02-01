@@ -1,9 +1,8 @@
 import re
 import yaml
 import openai
-import datetime
 
-from utils import logging
+from utils import logging, current_time
 
 
 class CHATGPT:
@@ -59,9 +58,7 @@ def main():
         print(f'{i=}, {s=}')
 
 
-    now = datetime.datetime.now()
-    now = now.strftime("%Y%m%d_%H%M%S_%f")[:-3]
-    filename = f'./output/{now}.txt'
+    filename = f'./output/{current_time()}.txt'
     with open(filename, 'w') as f:
         # All
         f.write('All: \n')
