@@ -9,11 +9,7 @@ from utils import logging, current_time
 
 class PhotoBot:
     def __init__(self, filename: str):
-        # self.buf = []
-
         self.info = None
-        # self.msg_id = ''
-
 
         with open(filename, 'r') as f:
             self.cf = yaml.load(f, Loader=yaml.CLoader)
@@ -82,7 +78,7 @@ class PhotoBot:
 
         return self._post(payload)
 
-    def upscale(self, msg_idx: int, img_idx: int):
+    def _upscale_raw(self, msg_idx: int, img_idx: int):
         logging.info('Start')
 
         msg_id = self.info[msg_idx]['id']
@@ -105,8 +101,6 @@ class PhotoBot:
         logging.info('Start')
 
         _ = self._gen_photo_raw(prompt)
-        # self.get_info(1)
-        # self.msg_ids.append(self.get_msg_id2())
         self.wait_event()
 
     def upscale_multi(self, num):
@@ -114,7 +108,7 @@ class PhotoBot:
 
         self.get_info(1)        # Get gen_photo() message id
         for i in range(num):
-            _ = self.upscale(msg_idx=0, img_idx=i)
+            _ = self._upscale_raw(msg_idx=0, img_idx=i)
 
         self.wait_event_multi(num)
 
@@ -123,19 +117,6 @@ class PhotoBot:
 
     def get_msg(self, mgs_idx: int = 0) -> str:
         return self.info[mgs_idx]['content']
-
-    def get_msg_id_del(self, msg: str, offset: int = 0) -> str:
-        # logging.info('Start')
-        # self.buf = []
-        #
-        # res = self._get(5)
-        # ds = json.loads(res.text)
-        # for i, d in enumerate(ds):
-        #     if msg.strip() in d['content']:
-        #         self.buf.append(d)
-        #
-        # return self.buf[offset]['id']
-        pass
 
     def download_image(self, mgs_idx: int, download_path: str, prefix: str = '', suffix: str = ''):
         logging.info('Start')
@@ -156,25 +137,15 @@ class PhotoBot:
             f.write(img)
 
     def wait_event(self):
-        # def get_packege():
-        #     res = self._get(1)
-        #     return json.loads(res.text)[0]
-
         logging.info('Start')
 
         time.sleep(5)
         while True:
-            # msg = self.get_info(1)[0]['content']
-
             self.get_info(1)
             msg = self.get_msg()
-            # self.msg_ids.append(self.get_msg_id2())
 
             if self._check_bot_finish(msg):
                 break
-
-            # if not (('start' in msg) or ('%' in msg) or ('paused' in msg)):
-            #     break
 
             time.sleep(1)
         time.sleep(1)
@@ -192,18 +163,6 @@ class PhotoBot:
             time.sleep(1)
         time.sleep(1)
 
-    # def get_around_test(self):
-    #     # logging.info('Start')
-    #     #
-    #     # # packages = self._get_around(5)
-    #     #
-    #     # packages = b.get_packege(5)
-    #     # self.ids = [p['id'] for p in packages]
-    #     #
-    #     # self.yooo = 10
-    #     pass
-
-
 
 if __name__ == '__main__':
     img_cnt = 4
@@ -220,35 +179,5 @@ if __name__ == '__main__':
     b.get_info(4)       # get last update message id
     for i in range(img_cnt):
         b.download_image(i, download_path=download_path, prefix=f'{i + 1}_{img_cnt}')
-
-
-
-
-    pass
-
-    # prompt = 'cute, robot, future, icon, air force, soldier'
-    # res = b.gen_photo(prompt)
-    # print(f'{res=}')
-    #
-    #
-    # for i in range(30):
-    #     msg_id = b.get_msg_id(prompt)
-    #     print(f'{i=}, {msg_id=}')
-    #     time.sleep(1)
-    #
-    # b.wait_event()
-    #
-    # msg_id = b.get_msg_id(prompt)
-    # print(f'{msg_id=}')
-    #
-    # res = b.upscale(0)
-    # print(f'{res=}')
-    # b.wait_event()
-    #
-    # msg_id = b.get_msg_id(prompt)
-    # print(f'{msg_id=}')
-    # b.download_image(0, download_path='./download/')
-
-
 
 
