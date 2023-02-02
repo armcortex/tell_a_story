@@ -42,6 +42,10 @@ def open_settings(filename: str):
 
 
 if __name__ == '__main__':
+    from time import perf_counter
+    t1_start = perf_counter()
+
+
     # parameter settings
     story_filename = 'story_settings.yaml'
     story_cf = open_settings(story_filename)
@@ -64,42 +68,70 @@ if __name__ == '__main__':
     prompt_log(time_str, styles, steps, steps_raw)
 
     # Generate Images
+    img_cnt = 4
     photobot = PhotoBot(photobot_filename)
 
-    for i, step in enumerate(steps):
+    for i_step, step in enumerate(steps):
         prompts = step + ', ' + ', '.join(styles)
-        _ = photobot.gen_photo(prompts)
-        photobot.wait_event()
-        _ = photobot.get_msg_id(prompts)
+        photobot.gen_photo(prompts)
+        photobot.upscale_multi(img_cnt)
 
-        for idx in range(4):
-            _ = photobot.upscale(idx)
-            photobot.wait_event()
-            _ = photobot.get_msg_id(prompts)
+        # Create folder
+        download_path = download_base_path + time_str + '/org/'
+        os.makedirs(download_path, exist_ok=True)
 
-            # Create folder
-            folder_path = download_base_path + time_str + '/org/'
-            os.makedirs(folder_path, exist_ok=True)
+        # download images
+        photobot.get_info(img_cnt)  # get last update message id
+        for i_img in range(img_cnt):
+            photobot.download_image(i_img, download_path=download_path, prefix=f'{i_step+1}_{i_img+1}-{story_topic}')
 
-            # download images
-            photobot.download_image(0, download_path=folder_path, prefix=f'{i+1}_{idx+1}-{story_topic}')
+    t1_stop = perf_counter()
+    diff = t1_stop - t1_start
+    print(f'Execute Duration: {diff:.2f} sec, {diff/60:.2f} min')
 
-    # # Convert images for test
-    # # Create debug folder
-    # # folder_debug_path = download_base_path + time_str + '/debug/'
+    # fast mode: 20.4 mins
+    # relax mode:
+
+    pass
+
+
+    # # Generate Images
+    # photobot = PhotoBot(photobot_filename)
     #
-    # img_org_path = download_base_path + 'test/org/'
+    # for i, step in enumerate(steps):
+    #     prompts = step + ', ' + ', '.join(styles)
+    #     _ = photobot.gen_photo(prompts)
+    #     photobot.wait_event()
+    #     _ = photobot.get_msg_id(prompts)
     #
-    # img_debug_path = download_base_path + 'test/debug/'
-    # if not os.path.isdir(img_debug_path):
-    #     os.mkdir(img_debug_path)
+    #     for idx in range(4):
+    #         _ = photobot.upscale(idx)
+    #         photobot.wait_event()
+    #         _ = photobot.get_msg_id(prompts)
     #
-    # edit_img_path = img_org_path + '*.png'
-    # edit_image_batch(imgs_in=edit_img_path, imgs_out=img_debug_path)
+    #         # Create folder
+    #         folder_path = download_base_path + time_str + '/org/'
+    #         os.makedirs(folder_path, exist_ok=True)
     #
-    # # Create Video
-    # edit_video_path = img_debug_path + '*.png'
-    # audio_path = './download/Body_On_Fire.mp3'
-    # output_video_path = img_debug_path + f'{time_str}_movie.mp4'
-    # gen_video(imgs_path=edit_video_path, audio_path=audio_path, output_path=output_video_path, img_duration=3.0)
+    #         # download images
+    #         photobot.download_image(0, download_path=folder_path, prefix=f'{i+1}_{idx+1}-{story_topic}')
+    #
+    # # # Convert images for test
+    # # # Create debug folder
+    # # # folder_debug_path = download_base_path + time_str + '/debug/'
+    # #
+    # # img_org_path = download_base_path + 'test/org/'
+    # #
+    # # img_debug_path = download_base_path + 'test/debug/'
+    # # if not os.path.isdir(img_debug_path):
+    # #     os.mkdir(img_debug_path)
+    # #
+    # # edit_img_path = img_org_path + '*.png'
+    # # edit_image_batch(imgs_in=edit_img_path, imgs_out=img_debug_path)
+    # #
+    # # # Create Video
+    # # edit_video_path = img_debug_path + '*.png'
+    # # audio_path = './download/Body_On_Fire.mp3'
+    # # output_video_path = img_debug_path + f'{time_str}_movie.mp4'
+    # # gen_video(imgs_path=edit_video_path, audio_path=audio_path, output_path=output_video_path, img_duration=3.0)
 

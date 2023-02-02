@@ -176,7 +176,7 @@ if __name__ == '__main__':
     # Download images
     download_path = download_path + current_time() + '/'
     os.makedirs(download_path, exist_ok=True)
-    b.get_info(4)       # get last update message id
+    b.get_info(img_cnt)       # get last update message id
     for i in range(img_cnt):
         b.download_image(i, download_path=download_path, prefix=f'{i + 1}_{img_cnt}')
 
