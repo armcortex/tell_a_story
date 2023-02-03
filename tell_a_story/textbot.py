@@ -7,7 +7,6 @@ from utils import logging, current_time
 
 class CHATGPT:
     def __init__(self):
-        # Get API key
         with open('config.yaml', 'r') as f:
             config = yaml.load(f, Loader=yaml.CLoader)
         openai.api_key = config['openai']['api_key']

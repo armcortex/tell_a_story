@@ -8,19 +8,10 @@ from utils import logging
 def edit_image(filename_in: str, filename_out: str, words: str):
     logging.info('Start')
 
-    # Open the image
     img = Image.open(filename_in)
-
-    # Create a draw object
     draw = ImageDraw.Draw(img)
-
-    # Choose a font and font size
     font = ImageFont.truetype("/usr/share/fonts/truetype/freefont/FreeMono.ttf", 50)
-
-    # Add the text to the image
     draw.text((10, 10), words, font=font, fill=(255, 255, 255))
-
-    # Save the image
     img.save(filename_out)
 
 
