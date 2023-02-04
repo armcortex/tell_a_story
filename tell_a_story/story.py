@@ -1,7 +1,7 @@
 import os
 import yaml
 
-from utils import logging, current_time
+from utils import logging, current_time, read_yaml, write_yaml, read_pickle, write_pickle
 from textbot import CHATGPT
 from photobot import PhotoBot
 
@@ -9,9 +9,11 @@ from edit_images import edit_image_batch
 from gen_video import gen_video
 
 
-def prompt_log(time_str: str, styles: str, steps: str, steps_raw: str):
-    filename = f'./output/{time_str}_prompts_log.txt'
-    with open(filename, 'w') as f:
+def prompt_log(story_topic: str, time_str: str, styles: str, steps: str, steps_raw: str):
+    file_path = f'./output/{time_str}_prompts_log.txt'
+    with open(file_path, 'w') as f:
+        f.write(f'{story_topic} \n\n')
+
         # All
         f.write('All: \n')
         f.write(f'{", ".join(styles)}, ')
@@ -34,9 +36,12 @@ def prompt_log(time_str: str, styles: str, steps: str, steps_raw: str):
         f.write(steps_raw)
 
 
-def open_settings(filename: str):
-    with open(filename, 'r') as f:
-        cf = yaml.load(f, Loader=yaml.CLoader)
+# def open_settings(filename: str):
+#     with open(filename, 'r') as f:
+#         cf = yaml.load(f, Loader=yaml.CLoader)
+#
+#     return cf
+
 
     return cf
 
@@ -48,7 +53,8 @@ if __name__ == '__main__':
 
     # parameter settings
     story_filename = 'story_settings.yaml'
-    story_cf = open_settings(story_filename)
+    # story_cf = open_settings(story_filename)
+    story_cf = read_yaml(story_filename)
 
     photobot_filename = 'config.yaml'
     download_base_path = './download/'

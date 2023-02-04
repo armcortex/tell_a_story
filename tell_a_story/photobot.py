@@ -4,15 +4,16 @@ import json
 import requests
 import time
 
-from utils import logging, current_time
+from utils import logging, current_time, read_yaml
 
 
 class PhotoBot:
-    def __init__(self, filename: str):
+    def __init__(self, config_path: str):
         self.info = None
 
-        with open(filename, 'r') as f:
-            self.cf = yaml.load(f, Loader=yaml.CLoader)
+        # with open(filename, 'r') as f:
+        #     self.cf = yaml.load(f, Loader=yaml.CLoader)
+        self.cf = read_yaml(config_path)
 
         self.header = {
             'authorization': self.cf['discord']['midjourney_bot']['token']
@@ -112,17 +113,27 @@ class PhotoBot:
 
         self.wait_event_multi(num)
 
-    def get_msg_id(self, mgs_idx: int = 0) -> str:
-        return self.info[mgs_idx]['id']
+    def get_msg_id(self, msg_idx: int = 0) -> str:
+        return self.info[msg_idx]['id']
 
-    def get_msg(self, mgs_idx: int = 0) -> str:
-        return self.info[mgs_idx]['content']
+    def get_msg(self, msg_idx: int = 0) -> str:
+        return self.info[msg_idx]['content']
 
-    def download_image(self, mgs_idx: int, download_path: str, prefix: str = '', suffix: str = ''):
+    def download_image(self, msg_idx: int, download_path: str, prefix: str = '', suffix: str = ''):
         logging.info('Start')
 
-        url = self.info[mgs_idx]['attachments'][0]['proxy_url']
-        img_name, ext_name = self.info[mgs_idx]['attachments'][0]['filename'].split('.')
+        url = self.info[msg_idx]['attachments'][0]['proxy_url']
+        img_name, ext_name = self.info[msg_idx]['attachments'][0]['filename'].split('.')
+
+        # try:
+        #     url = self.info[msg_idx]['attachments'][0]['proxy_url']
+        # except IndexError as e:
+        #     logging.error(f'Failed to download image in {msg_idx=}, error message: {e}')
+        #     print(f'Failed to download image in {msg_idx=}, error message: {e}')
+        #     self.get_info(1)
+        #     self.download_image(0, download_path, prefix, suffix)
+        #
+        # img_name, ext_name = self.info[msg_idx]['attachments'][0]['filename'].split('.')
 
         if prefix:
             prefix = prefix + '-'
@@ -130,10 +141,10 @@ class PhotoBot:
         if suffix:
             suffix = '-' + suffix
 
-        filename = download_path + prefix + img_name + suffix + '.' + ext_name
-
+        # save image
+        img_path = download_path + prefix + img_name + suffix + '.' + ext_name
         img = requests.get(url).content
-        with open(filename, 'wb') as f:
+        with open(img_path, 'wb') as f:
             f.write(img)
 
     def wait_event(self):

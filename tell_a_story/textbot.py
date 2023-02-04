@@ -2,14 +2,16 @@ import re
 import yaml
 import openai
 
-from utils import logging, current_time
+from utils import logging, current_time, read_yaml
 
 
 class CHATGPT:
-    def __init__(self):
-        with open('config.yaml', 'r') as f:
-            config = yaml.load(f, Loader=yaml.CLoader)
-        openai.api_key = config['openai']['api_key']
+    def __init__(self, config_path: str):
+        # with open('config.yaml', 'r') as f:
+        #     config = yaml.load(f, Loader=yaml.CLoader)
+        self.cf = read_yaml(config_path)
+
+        openai.api_key = self.cf['openai']['api_key']
 
     @staticmethod
     def _filter_keyword(s: str) -> list:
@@ -47,7 +49,7 @@ def main():
     query_style = f'please say English, and please list 10 style key word of Grimms Märchen story {query_story}. Make sure all style word have diversity'
     query_steps = f'list {query_story} full story step by step to the end, each step with only one sentence and with number count'
 
-    bot = CHATGPT()
+    bot = CHATGPT('config.yaml')
     styles, _ = bot.query(query_style, mode='keyword')
     print(f'{styles=}')
 
