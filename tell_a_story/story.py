@@ -1,5 +1,5 @@
 import os
-import yaml
+import tqdm
 
 from utils import logging, current_time, read_yaml, write_yaml, read_pickle, write_pickle
 from textbot import CHATGPT
@@ -36,14 +36,16 @@ def prompt_log(story_topic: str, time_str: str, styles: str, steps: str, steps_r
         f.write(steps_raw)
 
 
-# def open_settings(filename: str):
-#     with open(filename, 'r') as f:
-#         cf = yaml.load(f, Loader=yaml.CLoader)
-#
-#     return cf
+def print_star(msg: str):
+    logging.info(f'{"*" * 10} {msg} {"*" * 10}')
 
 
-    return cf
+def check_story_init_status(file_path: str):
+    pass
+
+
+def story_exit():
+    pass
 
 
 if __name__ == '__main__':
@@ -53,7 +55,6 @@ if __name__ == '__main__':
 
     # parameter settings
     story_filename = 'story_settings.yaml'
-    # story_cf = open_settings(story_filename)
     story_cf = read_yaml(story_filename)
 
     photobot_filename = 'config.yaml'

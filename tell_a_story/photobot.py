@@ -1,5 +1,4 @@
 import os
-import yaml
 import json
 import requests
 import time
@@ -10,9 +9,6 @@ from utils import logging, current_time, read_yaml
 class PhotoBot:
     def __init__(self, config_path: str):
         self.info = None
-
-        # with open(filename, 'r') as f:
-        #     self.cf = yaml.load(f, Loader=yaml.CLoader)
         self.cf = read_yaml(config_path)
 
         self.header = {

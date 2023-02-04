@@ -1,5 +1,4 @@
 import re
-import yaml
 import openai
 
 from utils import logging, current_time, read_yaml
@@ -7,10 +6,7 @@ from utils import logging, current_time, read_yaml
 
 class CHATGPT:
     def __init__(self, config_path: str):
-        # with open('config.yaml', 'r') as f:
-        #     config = yaml.load(f, Loader=yaml.CLoader)
         self.cf = read_yaml(config_path)
-
         openai.api_key = self.cf['openai']['api_key']
 
     @staticmethod
