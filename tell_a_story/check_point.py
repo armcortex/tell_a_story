@@ -104,12 +104,19 @@ class CheckPoint:
     def check_step(self, topic: str) -> bool:
         idx = self._d.topics.index(topic)
         content = self._d.topics_content[idx]
-        return content.current_step + 1 == content.step_total_cnt
+        return content.current_step + 1
 
     def update_step_cnt(self, topic: str):
         idx = self._d.topics.index(topic)
         self._d.topics_content[idx].current_step += 1
         self._write()
+
+    def finish_all(self):
+        status = [x.done for x in self._d.topics_status]
+        if all(status):
+            os.remove(self.file_path)
+        else:
+            raise ValueError(f'No all topic is finish, please check again')
 
 
 if __name__ == '__main__':
@@ -230,11 +237,11 @@ if __name__ == '__main__':
         c1.check_init(time_str)
         c1.add_topic(t1)
 
-        assert c1.check_step(t1['topic']) == False
+        assert c1.check_step(t1['topic']) == 1
 
         c1.update_step_cnt(t1['topic'])
         c1.update_step_cnt(t1['topic'])
-        assert c1.check_step(t1['topic']) == True
+        assert c1.check_step(t1['topic']) == 3
 
         print(f'Pass check_step()')
         os.remove(filename)
