@@ -46,7 +46,9 @@ def print_star(msg: str):
     logging.info(f'{"*" * 10} {msg} {"*" * 10}')
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
+
+def run_gen_story():
     from time import perf_counter
     t1_start = perf_counter()
 
