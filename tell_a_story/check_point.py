@@ -82,12 +82,6 @@ class CheckPoint:
     def check_topic_content(self, topic: str) -> bool:
         return topic in self._d.topics
 
-        # if topic['topic'] in self._d['topics']:
-        #     return True
-        # else:
-        #     self.add_topic(topic)
-        #     return False
-
     def read_topic(self, topic: str):
         idx = self._d.topics.index(topic)
         content = self._d.topics_content[idx]
@@ -95,13 +89,6 @@ class CheckPoint:
             raise ValueError(f'Wrong topic: {content.topic=} vs {topic=}')
 
         return content.styles, content.steps, content.steps_raw
-
-        # idx = self._d['topics'].index(topic)
-        # content = self._d['topics_content'][idx]
-        # if content['topic'] != topic:
-        #     raise ValueError('Wrong Topic')
-        #
-        # return content['styles'], content['steps'], content['steps_raw']
 
     def finish_topic(self, topic:str):
         idx = self._d.topics.index(topic)
@@ -114,31 +101,15 @@ class CheckPoint:
         self._d.topics_status[idx].done = True
         self._write()
 
-        # idx = self._d['topics'].index(topic)
-        # self._d['topics_status'][idx]['done'] = True
-        # self._write()
-
     def check_step(self, topic: str) -> bool:
         idx = self._d.topics.index(topic)
         content = self._d.topics_content[idx]
         return content.current_step + 1 == content.step_total_cnt
 
-        # idx = self._d['topics'].index(topic)
-        # content = self._d['topics_content'][idx]
-        # if content['current_step']+1 < content['step_total_cnt']:
-        #     self.update_step_cnt(content, idx)
-        #     return False
-        # else:
-        #     return True
-
     def update_step_cnt(self, topic: str):
         idx = self._d.topics.index(topic)
         self._d.topics_content[idx].current_step += 1
         self._write()
-
-        # idx = self._d['topics'].index(topic)
-        # self._d['topics_content'][idx]['step_total_cnt'] = pos
-        # self._write()
 
 
 if __name__ == '__main__':
@@ -269,85 +240,6 @@ if __name__ == '__main__':
         os.remove(filename)
 
     run_test(check_step)
-
-
-
-    pass
-
-
-
-
-
-
-    # c = CheckPoint('./download/status.yaml')
-    # c.check_init(current_time())
-    #
-    # t1 = {'topic': 'Story_1', 'styles': 'animation_1', 'steps': ['1_1', '2_1', '3_1']}
-    # t2 = {'topic': 'Story_2', 'styles': 'animation_2', 'steps': ['1_2', '2_2', '3_2']}
-    # t3 = {'topic': 'Story_3', 'styles': 'animation_3', 'steps': ['1_3', '2_3', '3_3']}
-    # ts = [t1, t2, t3]
-    #
-    # c.add_topic(t1)
-
-    # t1 = {'topic': 'Story_1', 'styles': ['s1_1', 's2_1', 's3_1'], 'steps': ['1_1', '2_1', '3_1']}
-    #
-    # # from dataclasses import dataclass
-    # import yaml
-    #
-    # from pydantic import ValidationError
-    # from pydantic.dataclasses import dataclass
-    #
-    #
-    #
-    #
-    # @dataclass
-    # class Data:
-    #     topics: str
-    #     styles: list
-    #     steps: list
-    #
-    # # d = Data(topics='Story_1', styles=['s1_1', 's2_1', 's3_1'], steps=['1_1', '2_1', '3_1'])
-    #
-    # @dataclass
-    # class test:
-    #     a1: str
-    #     a2: str
-    #     a3: str
-    #     a4: str
-    #     a5: str
-    #
-    # t = test(a1='a1', a2='a2', a3='a3', a4='a4', a5='a5')
-    #
-    # t.a1 = 12
-    #
-    # class MyConfig:
-    #     validate_assignment = True
-    #
-    # @dataclass(config=MyConfig)
-    # class Content:
-    #     topic: str
-    #     current_step: int
-    #     step_total_cnt: int
-    #     style: list
-    #     steps: list
-    #
-    # con = Content(topic='Story_1', current_step=0, step_total_cnt=6, style=['s1_1', 's2_1', 's3_1'], steps=['1_1', '2_1', '3_1'])
-
-    # class OrderedDumper(yaml.Dumper):
-    #     pass
-    #
-    #
-    # def represent_dict_order(dumper, data):
-    #     return dumper.represent_mapping('tag:yaml.org,2002:map', data.items())
-    #
-    #
-    # yaml.add_representer(dict, represent_dict_order)
-    #
-    # with open("./download/person.yaml", "w") as f:
-    #     yaml.dump(con.__dict__, f, Dumper=OrderedDumper)
-
-
-    # write_yaml('./download/dataclass_test.yaml', con.__dict__)
 
 
 
