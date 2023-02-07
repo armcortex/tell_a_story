@@ -1,7 +1,7 @@
 import re
 import openai
 
-from utils import logging, current_time, read_yaml
+from utils import logging, read_yaml
 
 
 class CHATGPT:

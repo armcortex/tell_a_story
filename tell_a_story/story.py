@@ -1,6 +1,5 @@
 import os
 import copy
-import tqdm
 
 from utils import logging, current_time, read_yaml, write_yaml, read_pickle, write_pickle
 from textbot import CHATGPT
@@ -47,14 +46,6 @@ def print_star(msg: str):
     logging.info(f'{"*" * 10} {msg} {"*" * 10}')
 
 
-def check_story_init_status(file_path: str):
-    pass
-
-
-def story_exit():
-    pass
-
-
 if __name__ == '__main__':
     from time import perf_counter
     t1_start = perf_counter()
@@ -86,11 +77,6 @@ if __name__ == '__main__':
             print_star(f'Topic: {story_topic} Already finished')
             continue
 
-    # story_bar = tqdm.tqdm(story_cf['topics'][:20])
-    # for i_story_topic, story_topic in enumerate(story_bar):
-    #     story_bar.set_description(f'Story: {story_topic}')
-    #     story_bar.display(f'{i_story_topic} - {story_topic}')
-
         if not cp.check_topic_exist(story_topic):
             story_style = f'please say English, and please list 10 style key word of {story_cf["story"]} story {story_topic}. Make sure all style word have diversity'
             story_steps = f'list {story_topic} full story step by step to the end with 10 steps, each step with only one sentence and with number count'
@@ -102,8 +88,6 @@ if __name__ == '__main__':
 
             steps_raw_copy = copy.deepcopy(steps_raw)
             cp.add_topic({'topic': story_topic, 'styles': styles, 'steps': steps, 'steps_raw': steps_raw_copy.split('\n\n')})
-
-            # cp.add_topic({'topic': story_topic, 'styles': styles, 'steps': steps, 'steps_raw': steps_raw})
         else:
             styles, steps, steps_raw = cp.read_topic(story_topic)
 
@@ -121,15 +105,8 @@ if __name__ == '__main__':
                 print_star(f'{i_step+1}/{len(steps)} {story_topic} - Already finished')
                 continue
 
-        # step_bar = tqdm.tqdm(steps)
-        # for i_step, step in enumerate(step_bar):
-        #     step_bar.set_description(f'Steps: {step[:20]}')
-
-            # step_bar.display(f'gen_photo()', pos=2)
             prompts = step + ', ' + ', '.join(styles)
             photobot.gen_photo(prompts)
-
-            # step_bar.display(f'upscale_multi()', pos=2)
             photobot.upscale_multi(img_cnt)
 
             # Create folder
@@ -137,7 +114,6 @@ if __name__ == '__main__':
             os.makedirs(download_path, exist_ok=True)
 
             # download images
-            # step_bar.display(f'download_image()', pos=2)
             photobot.get_info(img_cnt)  # get last update message id
             for i_img in range(img_cnt):
                 photobot.download_image(i_img, download_path=download_path, prefix=f'{i_step+1}_{i_img+1}-{story_topic}')
