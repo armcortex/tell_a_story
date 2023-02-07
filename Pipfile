@@ -11,6 +11,9 @@ requests = "*"
 ffmpeg-python = "*"
 pillow = "*"
 joblib = "*"
+tqdm = "*"
+pydantic = "*"
+"ruamel.yaml" = "*"
 
 [dev-packages]
 
