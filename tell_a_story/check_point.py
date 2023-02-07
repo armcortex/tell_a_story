@@ -75,14 +75,20 @@ class CheckPoint:
         self._d.topics_content.append(content)
         self._write()
 
-    def check_topic_finish(self, topic: str) -> bool:
+    def check_topic_exist(self, topic: str) -> bool:
+        return topic in self._d.topics
+
+    def check_finished_topic(self, topic: str) -> bool:
+        if not self.check_topic_exist(topic):
+            return False
+
         idx = self._d.topics.index(topic)
         return self._d.topics_status[idx].done
 
-    def check_topic_content(self, topic: str) -> bool:
-        return topic in self._d.topics
-
     def read_topic(self, topic: str):
+        if not self.check_topic_exist(topic):
+            raise ValueError(f'Topic not exist')
+
         idx = self._d.topics.index(topic)
         content = self._d.topics_content[idx]
         if content.topic != topic:
@@ -90,9 +96,11 @@ class CheckPoint:
 
         return content.styles, content.steps, content.steps_raw
 
-    def finish_topic(self, topic:str):
-        idx = self._d.topics.index(topic)
+    def finish_topic(self, topic: str):
+        if not self.check_topic_exist(topic):
+            raise ValueError(f'Topic not exist')
 
+        idx = self._d.topics.index(topic)
         current_step = self._d.topics_content[idx].current_step
         step_total_cnt = self._d.topics_content[idx].step_total_cnt
         if current_step != step_total_cnt:
@@ -101,12 +109,18 @@ class CheckPoint:
         self._d.topics_status[idx].done = True
         self._write()
 
-    def check_step(self, topic: str) -> bool:
+    def check_step(self, topic: str) -> int:
+        if not self.check_topic_exist(topic):
+            raise ValueError(f'Topic not exist')
+
         idx = self._d.topics.index(topic)
         content = self._d.topics_content[idx]
-        return content.current_step + 1
+        return content.current_step
 
     def update_step_cnt(self, topic: str):
+        if not self.check_topic_exist(topic):
+            raise ValueError(f'Topic not exist')
+
         idx = self._d.topics.index(topic)
         self._d.topics_content[idx].current_step += 1
         self._write()
@@ -183,33 +197,33 @@ if __name__ == '__main__':
     run_test(check_add_topic)
 
 
-    def check_topic_finish():
+    def check_finished_topic():
         c1 = CheckPoint(filename)
         c1.check_init(time_str)
         c1.add_topic(t1)
 
         # Check init state
-        assert c1.check_topic_finish(t1['topic']) == False
+        assert c1.check_finished_topic(t1['topic']) == False
 
         # Check current_step protection
         try:
             c1.finish_topic(t1['topic'])
         except:
             pass
-        assert c1.check_topic_finish(t1['topic']) == False
+        assert c1.check_finished_topic(t1['topic']) == False
 
         # Check set correct step cnt
         c1.update_step_cnt(t1['topic'])
         c1.update_step_cnt(t1['topic'])
         c1.update_step_cnt(t1['topic'])
         c1.finish_topic(t1['topic'])
-        assert c1.check_topic_finish(t1['topic']) == True
+        assert c1.check_finished_topic(t1['topic']) == True
 
-        print(f'Pass check_topic_finish()')
+        print(f'Pass check_finished_topic()')
         os.remove(filename)
 
 
-    run_test(check_topic_finish)
+    run_test(check_finished_topic)
 
     def check_read_topic():
         c1 = CheckPoint(filename)
@@ -237,11 +251,11 @@ if __name__ == '__main__':
         c1.check_init(time_str)
         c1.add_topic(t1)
 
-        assert c1.check_step(t1['topic']) == 1
+        assert c1.check_step(t1['topic']) == 0
 
         c1.update_step_cnt(t1['topic'])
         c1.update_step_cnt(t1['topic'])
-        assert c1.check_step(t1['topic']) == 3
+        assert c1.check_step(t1['topic']) == 2
 
         print(f'Pass check_step()')
         os.remove(filename)
