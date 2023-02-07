@@ -2,6 +2,7 @@ import os
 import json
 import requests
 import time
+import re
 
 from utils import logging, current_time, read_yaml
 
@@ -17,7 +18,8 @@ class PhotoBot:
 
     @staticmethod
     def _check_bot_finish(msg: str) -> bool:
-        if not (('start' in msg) or ('%' in msg) or ('paused' in msg)):
+        s = re.findall(r'\((.*)\)', msg)[0]
+        if not (('Waiting to start' in s) or ('%' in s) or ('paused' in s)):
             return True
         return False
 
@@ -40,6 +42,9 @@ class PhotoBot:
     def get_info(self, cnt: int = 1) -> list:
         self.info = json.loads(self._get(cnt).text)
         return self.info.reverse()
+
+    def relax_mode(self):
+        pass
 
     def _gen_photo_raw(self, prompt: str):
         logging.info('Start')
