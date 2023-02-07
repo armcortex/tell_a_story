@@ -1,7 +1,8 @@
 import os
 import copy
+import time
 
-from utils import logging, current_time, read_yaml, write_yaml, read_pickle, write_pickle
+from utils import logging, current_time, read_yaml, write_yaml, read_pickle, write_pickle, start_process
 from textbot import CHATGPT
 from photobot import PhotoBot
 from check_point import CheckPoint
@@ -118,7 +119,18 @@ def run_gen_story():
             # download images
             photobot.get_info(img_cnt)  # get last update message id
             for i_img in range(img_cnt):
-                photobot.download_image(i_img, download_path=download_path, prefix=f'{i_step+1}_{i_img+1}-{story_topic}')
+                # TODO: need to remove downloaded images, if previous step not work correctly
+
+                try:
+                    photobot.download_image(i_img, download_path=download_path, prefix=f'{i_step+1}_{i_img+1}-{story_topic}')
+                except Exception as e:
+                    logging.error(f'{"=" * 20}  download_image() error Begin {"=" * 20}')
+                    logging.error(f'Failed to download image in {i_img=}, error message: {e}')
+                    logging.error(f'Process restart')
+                    logging.error(f'{"=" * 20}  download_image() error End {"=" * 20}')
+                    start_process(run_gen_story)
+                    time.sleep(1)
+
 
             # Update progress
             cp.update_step_cnt(story_topic)
