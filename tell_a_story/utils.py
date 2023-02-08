@@ -7,13 +7,14 @@ from multiprocessing import Process
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+    format='%(asctime)s.%(msecs)03d %(levelname)s Proc: %(process)s  %(module)s - %(funcName)s: %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S',
 )
 
 
-def start_process(fn):
-    p = Process(target=fn)
+def start_process(fn, args=()):
+    logging.info(f'function: {fn.__qualname__}()')
+    p = Process(target=fn, args=args)
     p.start()
     return p
 
