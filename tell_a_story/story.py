@@ -4,13 +4,25 @@ import time
 import glob
 import asyncio
 
-from utils import logging, current_time, read_yaml, write_yaml, read_pickle, write_pickle, start_process, async_queue
+from utils import logging, current_time, read_yaml, write_yaml, read_pickle, write_pickle, start_process
 from textbot import CHATGPT
 from photobot import PhotoBot
 from check_point import CheckPoint
+from discordbot import write_msg_task
+
 
 from edit_images import edit_image_batch
 from gen_video import gen_video
+
+# event_loop = asyncio.get_event_loop()
+
+
+# def send_discord_msg(msg: str):
+#     event_loop = asyncio.get_event_loop()
+#     coroutine = async_queue.put(msg)
+#     event_loop.run_until_complete(coroutine)
+
+
 
 
 def prompt_log(story_topic: str, time_str: str, styles: str, steps: str, steps_raw: str):
@@ -52,6 +64,8 @@ def print_star(msg: str):
 # if __name__ == '__main__':
 
 def run_gen_story():
+    write_msg_task(f'{"*" * 5} Start run_gen_story() {"*" * 5}')
+
     from time import perf_counter
     t1_start = perf_counter()
 
@@ -82,6 +96,9 @@ def run_gen_story():
             print_star(f'Topic: {story_topic} Already finished')
             continue
 
+        # run_async_fn(send_dm_channel, f'Start {i_story_topic+1}/{len(story_cf["topics"])} - Topic: {story_topic}')
+        write_msg_task(f'Start {i_story_topic+1}/{len(story_cf["topics"])} - Topic: {story_topic}')
+
         if not cp.check_topic_exist(story_topic):
             story_style = f'please say English, and please list 10 style key word of {story_cf["story"]} story {story_topic}. Make sure all style word have diversity'
             story_steps = f'list {story_topic} full story step by step to the end with 10 steps, each step with only one sentence and with number count'
@@ -96,6 +113,8 @@ def run_gen_story():
                 logging.error(f'Failed to query story: {story_topic}, error message: {e}')
                 logging.error(f'Process restart')
                 logging.error(f'{"=" * 20}  chatbot.query() error End {"=" * 20}')
+                write_msg_task(f'{"*" * 5} chatbot.query() failed, restarting {"*" * 5}')
+
                 start_process(run_gen_story)
                 time.sleep(1)
                 os.system(f'kill {os.getpid()}')
@@ -118,6 +137,9 @@ def run_gen_story():
             if i_step < cp.check_step(story_topic):
                 print_star(f'{i_step+1}/{len(steps)} {story_topic} - Already finished')
                 continue
+
+            # run_async_fn(send_dm_channel, f'Start Steps: {i_step+1}/{len(steps)} {story_topic}')
+            write_msg_task(f'Start Steps: {i_step+1}/{len(steps)} {story_topic}')
 
             prompts = step + ', ' + ', '.join(styles)
             photobot.gen_photo(prompts)
@@ -143,6 +165,8 @@ def run_gen_story():
                     logging.error(f'Failed to download image in {i_img=}, error message: {e}')
                     logging.error(f'Process restart')
                     logging.error(f'{"=" * 20}  download_image() error End {"=" * 20}')
+                    write_msg_task(f'{"*"*5} download_image() failed, restarting {"*"*5}')
+
                     start_process(run_gen_story)
                     time.sleep(1)
                     os.system(f'kill {os.getpid()}')
