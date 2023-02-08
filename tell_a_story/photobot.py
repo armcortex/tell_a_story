@@ -126,16 +126,6 @@ class PhotoBot:
         url = self.info[msg_idx]['attachments'][0]['proxy_url']
         img_name, ext_name = self.info[msg_idx]['attachments'][0]['filename'].split('.')
 
-        # try:
-        #     url = self.info[msg_idx]['attachments'][0]['proxy_url']
-        # except IndexError as e:
-        #     logging.error(f'Failed to download image in {msg_idx=}, error message: {e}')
-        #     print(f'Failed to download image in {msg_idx=}, error message: {e}')
-        #     self.get_info(1)
-        #     self.download_image(0, download_path, prefix, suffix)
-        #
-        # img_name, ext_name = self.info[msg_idx]['attachments'][0]['filename'].split('.')
-
         if prefix:
             prefix = prefix + '-'
 

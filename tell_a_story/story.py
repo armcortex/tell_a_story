@@ -2,27 +2,15 @@ import os
 import copy
 import time
 import glob
-import asyncio
 
-from utils import logging, current_time, read_yaml, write_yaml, read_pickle, write_pickle, start_process
+from utils import logging, current_time, read_yaml, start_process
 from textbot import CHATGPT
 from photobot import PhotoBot
 from check_point import CheckPoint
 from discordbot import write_msg_task
 
-
 from edit_images import edit_image_batch
 from gen_video import gen_video
-
-# event_loop = asyncio.get_event_loop()
-
-
-# def send_discord_msg(msg: str):
-#     event_loop = asyncio.get_event_loop()
-#     coroutine = async_queue.put(msg)
-#     event_loop.run_until_complete(coroutine)
-
-
 
 
 def prompt_log(story_topic: str, time_str: str, styles: str, steps: str, steps_raw: str):
@@ -61,8 +49,6 @@ def print_star(msg: str):
     logging.info(f'{"*" * 10} {msg} {"*" * 10}')
 
 
-# if __name__ == '__main__':
-
 def run_gen_story():
     write_msg_task(f'{"*" * 5} Start run_gen_story() {"*" * 5}')
 
@@ -84,11 +70,6 @@ def run_gen_story():
     cp.check_init(time_str)
     time_str = cp.read_raw_data.folder_name
 
-    # parameter settings
-    # story_topic = story_cf['topics'][25]
-    # for story_topic in story_cf['topics'][:20]:
-
-
     for i_story_topic, story_topic in enumerate(story_cf['topics']):
         print_star(f'{i_story_topic+1}/{len(story_cf["topics"])} - Topic: {story_topic}')
 
@@ -96,7 +77,6 @@ def run_gen_story():
             print_star(f'Topic: {story_topic} Already finished')
             continue
 
-        # run_async_fn(send_dm_channel, f'Start {i_story_topic+1}/{len(story_cf["topics"])} - Topic: {story_topic}')
         write_msg_task(f'Start {i_story_topic+1}/{len(story_cf["topics"])} - Topic: {story_topic}')
 
         if not cp.check_topic_exist(story_topic):
@@ -138,7 +118,6 @@ def run_gen_story():
                 print_star(f'{i_step+1}/{len(steps)} {story_topic} - Already finished')
                 continue
 
-            # run_async_fn(send_dm_channel, f'Start Steps: {i_step+1}/{len(steps)} {story_topic}')
             write_msg_task(f'Start Steps: {i_step+1}/{len(steps)} {story_topic}')
 
             prompts = step + ', ' + ', '.join(styles)
