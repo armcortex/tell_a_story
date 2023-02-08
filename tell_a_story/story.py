@@ -1,8 +1,10 @@
 import os
 import copy
 import time
+import glob
+import asyncio
 
-from utils import logging, current_time, read_yaml, write_yaml, read_pickle, write_pickle, start_process
+from utils import logging, current_time, read_yaml, write_yaml, read_pickle, write_pickle, start_process, async_queue
 from textbot import CHATGPT
 from photobot import PhotoBot
 from check_point import CheckPoint
@@ -86,8 +88,17 @@ def run_gen_story():
 
             # Generate Story guideline and style
             chatbot = CHATGPT(bot_config_path)
-            styles, _ = chatbot.query(story_style, mode='keyword')
-            steps, steps_raw = chatbot.query(story_steps, mode='sentence')
+            try:
+                styles, _ = chatbot.query(story_style, mode='keyword')
+                steps, steps_raw = chatbot.query(story_steps, mode='sentence')
+            except Exception as e:
+                logging.error(f'{"=" * 20}  chatbot.query() error Begin {"=" * 20}')
+                logging.error(f'Failed to query story: {story_topic}, error message: {e}')
+                logging.error(f'Process restart')
+                logging.error(f'{"=" * 20}  chatbot.query() error End {"=" * 20}')
+                start_process(run_gen_story)
+                time.sleep(1)
+                os.system(f'kill {os.getpid()}')
 
             steps_raw_copy = copy.deepcopy(steps_raw)
             cp.add_topic({'topic': story_topic, 'styles': styles, 'steps': steps, 'steps_raw': steps_raw_copy.split('\n\n')})
@@ -119,10 +130,14 @@ def run_gen_story():
             # download images
             photobot.get_info(img_cnt)  # get last update message id
             for i_img in range(img_cnt):
-                # TODO: need to remove downloaded images, if previous step not work correctly
+                prefix_filename = f'{i_step+1}_{i_img+1}-{story_topic}'
+
+                del_filename = download_path + prefix_filename
+                for f in glob.glob(f'{del_filename}*.png'):
+                    os.remove(f)
 
                 try:
-                    photobot.download_image(i_img, download_path=download_path, prefix=f'{i_step+1}_{i_img+1}-{story_topic}')
+                    photobot.download_image(i_img, download_path=download_path, prefix=prefix_filename)
                 except Exception as e:
                     logging.error(f'{"=" * 20}  download_image() error Begin {"=" * 20}')
                     logging.error(f'Failed to download image in {i_img=}, error message: {e}')
@@ -130,6 +145,7 @@ def run_gen_story():
                     logging.error(f'{"=" * 20}  download_image() error End {"=" * 20}')
                     start_process(run_gen_story)
                     time.sleep(1)
+                    os.system(f'kill {os.getpid()}')
 
 
             # Update progress
