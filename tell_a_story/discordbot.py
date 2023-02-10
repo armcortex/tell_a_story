@@ -1,4 +1,5 @@
 import os
+import glob
 import datetime
 import time
 import asyncio
@@ -38,6 +39,8 @@ async def background_task():
     cnt = 0
     while not client.is_closed():
         file_path = BASE_TMP_PATH + f'{cnt}_{SIGN_NUM}.txt'
+
+        # Checking if any messages need to be sent
         while True:
             if os.path.exists(file_path):
                 msg = read_msg(file_path)
@@ -85,6 +88,10 @@ async def send_dm_channel(msg: str):
 
 
 def run_discord_bot_client():
+    # Clean all previous data
+    for f in glob.glob(BASE_TMP_PATH + '*.txt'):
+        os.remove(f)
+
     client.loop.create_task(background_task())
     client.run(cf['discord']['token'])
 
