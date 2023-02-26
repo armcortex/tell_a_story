@@ -19,3 +19,9 @@ Automatic create stories with ChatGPT + Midjourney + FFmpeg
   - Midjourney Bot Session ID
   - Midjourney Bot Channel ID
 - [story_settings_template.yaml](./tell_a_story/story_settings_template.yaml) Setup story series you want to tell and topics
+
+## Usage
+- Rename `config_template.yaml` to `config.yaml`
+- Rename `story_settings_template.yaml` to `story_settings.yaml`
+- Install `pipenv install`
+- Run `pipenv run python main.py`
