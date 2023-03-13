@@ -1,6 +1,9 @@
-# Tell a Story
+# Tell a Story (Work in Progress)
 
 Automatic create stories with ChatGPT + Midjourney + FFmpeg
+
+## Video Demo
+[![Youtube](https://img.youtube.com/vi/xowItPDmx4o/0.jpg)](https://youtu.be/xowItPDmx4o)
 
 ## Steps
 1. Using ChatGPT to create story content and story image style
