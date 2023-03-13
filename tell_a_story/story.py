@@ -3,7 +3,7 @@ import copy
 import time
 import glob
 
-from utils import logging, current_time, read_yaml, start_process
+from utils import logging, current_time, read_yaml, start_process, DOWNLOAD_BASE_PATH
 from textbot import CHATGPT
 from photobot import PhotoBot
 from check_point import CheckPoint
@@ -52,6 +52,14 @@ def print_star(msg: str):
 def run_gen_story():
     write_msg_task(f'{"*" * 5} Start run_gen_story() {"*" * 5}')
 
+    # if sys.platform == 'linux' or sys.platform == 'linux2':
+    #     DOWNLOAD_BASE_PATH = './download/'
+    # elif sys.platform == 'darwin':
+    #     DOWNLOAD_BASE_PATH = '/Users/mcs51/code_storge/tell_a_story/download/'
+    # else:
+    #     raise ValueError('Only support linux and macOS')
+
+
     from time import perf_counter
     t1_start = perf_counter()
 
@@ -61,8 +69,8 @@ def run_gen_story():
     story_cf = read_yaml(story_filename)
 
     bot_config_path = 'config.yaml'
-    download_base_path = './download/'
-    status_file_path = f'{download_base_path}story_status.yaml'
+
+    status_file_path = f'{DOWNLOAD_BASE_PATH}story_status.yaml'
 
     time_str = current_time()
 
@@ -121,11 +129,38 @@ def run_gen_story():
             write_msg_task(f'Start Steps: {i_step+1}/{len(steps)} {story_topic}')
 
             prompts = step + ', ' + ', '.join(styles)
-            photobot.gen_photo(prompts)
-            photobot.upscale_multi(img_cnt)
+
+            try:
+                photobot.gen_photo(prompts)
+            except Exception as e:
+                logging.error(f'{"=" * 20}  gen_photo() error Begin {"=" * 20}')
+                logging.error(f'Failed to generate photo in step {i_step=}, error message: {e}')
+                logging.error(f'Process restart')
+                logging.error(f'{"=" * 20}  gen_photo() error End {"=" * 20}')
+                write_msg_task(f'{"*" * 5} gen_photo() failed, restarting {"*" * 5}')
+
+                start_process(run_gen_story)
+                # TODO: change sleep 20 minutes to cancel previous task function
+                time.sleep(20*60)           # Make sure previous images is finish
+                os.system(f'kill {os.getpid()}')
+
+            try:
+                photobot.upscale_multi(img_cnt)
+            except Exception as e:
+                logging.error(f'{"=" * 20}  upscale_multi() error Begin {"=" * 20}')
+                logging.error(f'Failed to upscale photo in step {i_step=}, error message: {e}')
+                logging.error(f'Process restart')
+                logging.error(f'{"=" * 20}  upscale_multi() error End {"=" * 20}')
+                write_msg_task(f'{"*" * 5} upscale_multi() failed, restarting {"*" * 5}')
+
+                start_process(run_gen_story)
+                # TODO: change sleep 20 minutes to cancel previous task function
+                time.sleep(20*60)           # Make sure previous images is finish
+                os.system(f'kill {os.getpid()}')
+
 
             # Create folder
-            download_path = download_base_path + f'{time_str}/{i_story_topic+1}_{story_topic}/org/'
+            download_path = DOWNLOAD_BASE_PATH + f'{time_str}/{i_story_topic+1}_{story_topic}/org/'
             os.makedirs(download_path, exist_ok=True)
 
             # download images
@@ -147,7 +182,10 @@ def run_gen_story():
                     write_msg_task(f'{"*"*5} download_image() failed, restarting {"*"*5}')
 
                     start_process(run_gen_story)
-                    time.sleep(1)
+                    # time.sleep(1)
+                    # TODO: change sleep 20 minutes to cancel previous task function
+                    time.sleep(20 * 60)  # Make sure previous images is finish
+
                     os.system(f'kill {os.getpid()}')
 
 
@@ -184,7 +222,7 @@ def run_gen_story():
     #         _ = photobot.get_msg_id(prompts)
     #
     #         # Create folder
-    #         folder_path = download_base_path + time_str + '/org/'
+    #         folder_path = DOWNLOAD_BASE_PATH + time_str + '/org/'
     #         os.makedirs(folder_path, exist_ok=True)
     #
     #         # download images
@@ -192,11 +230,11 @@ def run_gen_story():
     #
     # # # Convert images for test
     # # # Create debug folder
-    # # # folder_debug_path = download_base_path + time_str + '/debug/'
+    # # # folder_debug_path = DOWNLOAD_BASE_PATH + time_str + '/debug/'
     # #
-    # # img_org_path = download_base_path + 'test/org/'
+    # # img_org_path = DOWNLOAD_BASE_PATH + 'test/org/'
     # #
-    # # img_debug_path = download_base_path + 'test/debug/'
+    # # img_debug_path = DOWNLOAD_BASE_PATH + 'test/debug/'
     # # if not os.path.isdir(img_debug_path):
     # #     os.mkdir(img_debug_path)
     # #

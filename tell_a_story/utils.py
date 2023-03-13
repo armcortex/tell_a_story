@@ -1,8 +1,13 @@
+import os
+import sys
 import logging
 import datetime
 import yaml
 import pickle
+import time
 from multiprocessing import Process
+# from functools import wraps
+
 
 
 logging.basicConfig(
@@ -10,6 +15,34 @@ logging.basicConfig(
     format='%(asctime)s.%(msecs)03d %(levelname)s Proc: %(process)s  %(module)s - %(funcName)s: %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S',
 )
+
+
+if sys.platform == 'linux' or sys.platform == 'linux2':
+    DOWNLOAD_BASE_PATH = './download/'
+elif sys.platform == 'darwin':
+    DOWNLOAD_BASE_PATH = '/Users/mcs51/code_storge/tell_a_story/download/'
+else:
+    raise ValueError('Only support linux and macOS')
+
+
+# def restart_process_dec(story_fn, write_msg_task, failed_msg: str):
+#     def wrap(func):
+#         @wraps(func)
+#         def wrapped_f(*args, **kwargs):
+#             try:
+#                 return func(*args, **kwargs)
+#             except Exception as e:
+#                 logging.error(f'{"=" * 20}  {func.__qualname__}() error Begin {"=" * 20}')
+#                 logging.error(f'{failed_msg}, error message: {e}')
+#                 logging.error(f'Process restart')
+#                 logging.error(f'{"=" * 20}  {func.__qualname__}() error End {"=" * 20}')
+#                 write_msg_task(f'{"*" * 5} {func.__qualname__}() failed, restarting {"*" * 5}')
+#
+#                 start_process(story_fn())
+#                 time.sleep(1)
+#                 os.system(f'kill {os.getpid()}')
+#         return wrapped_f
+#     return wrap
 
 
 def start_process(fn, args=()):

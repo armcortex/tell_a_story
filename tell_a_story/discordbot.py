@@ -5,7 +5,7 @@ import time
 import asyncio
 import discord
 
-from utils import logging, read_yaml, start_process, current_time
+from utils import logging, read_yaml, start_process, current_time, DOWNLOAD_BASE_PATH
 
 
 cf = read_yaml('config.yaml')
@@ -15,7 +15,7 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 SIGN_NUM = current_time()
-BASE_TMP_PATH = './download/msg_data_tmp/'
+BASE_TMP_PATH = DOWNLOAD_BASE_PATH + 'msg_data_tmp/'
 write_msg_cnt = 0
 
 
