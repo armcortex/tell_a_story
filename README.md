@@ -13,6 +13,7 @@ Automatic create stories with ChatGPT + Midjourney + FFmpeg
 ## Features
 - [check_point.py](./tell_a_story/check_point.py) will save the process step, if process failed system will restart and `check_point.py` will restore last step and continue
 - [discordbot.py](./tell_a_story/discordbot.py) will report program status
+<img src="./doc/images/discord_log.png" alt="discord-log" width=500>
 
 ## Setup
 - [config_template.yaml](./tell_a_story/config_template.yaml) Setup your configs
