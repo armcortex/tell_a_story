@@ -12,20 +12,20 @@ Dive into the world of AI and experience the magic of automated story films, all
 [Blog](https://about.armcortex.cc/post/story-teller/)
 
 ## 🌟 Features:
-#### Narrative Generation with ChatGPT
+#### 1. Narrative Generation with ChatGPT
  - Story crafted segment-wise for easier adaptation.
  - Adjustable mood or style for each segment.
-#### Lifelike Image Creation with Midjourney
+#### 2. Lifelike Image Creation with Midjourney
  - Converts story content and style into visually captivating cover and segment images.
-#### Film Assembly with FFmpeg
+#### 3. Film Assembly with FFmpeg
  - Seamlessly strings together the generated images.
  - Integrates mood-setting background tunes for a complete film experience.
-#### Real-time Updates on Discord
+#### 4. Real-time Updates on Discord
  - Track project status: from ChatGPT's storytelling to Midjourney's image generation, all the way to downloading.
  - Powered by the Discord API for transparent monitoring.
-#### Crash Recovery System
+#### 5. Crash Recovery System
  - System hiccup? No worries! The backup's ready to pick up right where it left off.
-#### Customizable Story Themes
+#### 6. Customizable Story Themes
  - Not just limited to Grimm tales.
  - Flexible parameter file to tailor the system for any story theme.
 
