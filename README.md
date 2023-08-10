@@ -5,7 +5,11 @@ Dive into the world of AI and experience the magic of automated story films, all
 ## Video Demo
 [YouTube](https://youtu.be/xowItPDmx4o)
 
-[![Youtube](./doc//images/midjourney.webp)](https://youtu.be/xowItPDmx4o)
+<!-- [![Youtube](./doc//images/midjourney.webp)](https://youtu.be/xowItPDmx4o) -->
+
+<a href="https://youtu.be/xowItPDmx4o">
+    <img src="./doc//images/midjourney.webp" alt="Youtube" width="320" height="320">
+</a>
 
 [Blog](https://about.armcortex.cc/post/story-teller/)
 
