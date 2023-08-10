@@ -20,16 +20,26 @@ class CHATGPT:
     def query(self, prompt, mode: str='keyword'):
         logging.info('Start')
 
-        response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt=prompt,
-            temperature=0.9,
-            max_tokens=150,
-            top_p=1,
-            frequency_penalty=0.0,
-            presence_penalty=0.6,
-            stop=[" Human:", " AI:"]
+        response = openai.ChatCompletion.create(
+            model='gpt-3.5-turbo-0301',
+            temperature=0.0,
+            max_tokens=2000,
+            messages=[
+                {'role': 'system', 'content': 'You are a Storytelling Expert'},
+                {'role': 'user', 'content': prompt},
+            ]
         )
+
+        # response = openai.Completion.create(
+        #     model="gpt-3.5-turbo-0301",
+        #     prompt=prompt,
+        #     temperature=0.9,
+        #     max_tokens=2000,
+        #     top_p=1,
+        #     frequency_penalty=0.0,
+        #     presence_penalty=0.6,
+        #     stop=[" Human:", " AI:"]
+        # )
         ans = response['choices'][0]['text']
 
         if 'keyword' in mode:
